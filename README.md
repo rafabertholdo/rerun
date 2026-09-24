@@ -11,16 +11,18 @@ and — for Steam games — the Steam client into a folder it manages, then play
 game with **Play**: no bottles, wrappers or terminal.
 
 🌐 **Website:** [studiocamera.app/rerun](https://studiocamera.app/rerun/)
-📖 **Step-by-step setup guide, from a fresh Mac to the first room:**
-[Resident Evil on a Mac, from zero](https://studiocamera.app/guides/resident-evil-on-mac/)
+📖 **Step-by-step setup guides, from a fresh Mac to the first room:**
+[Resident Evil HD Remaster](https://studiocamera.app/guides/resident-evil-hd-remaster-on-mac/) ·
+[Resident Evil (1996)](https://studiocamera.app/guides/resident-evil-1996-on-mac/) ·
+[GTA2](https://studiocamera.app/guides/gta2-on-mac/)
 
 ## Supported games
 
-| Game | Store | Status |
-|------|-------|--------|
-| Resident Evil HD Remaster (`bhd.exe`) | [Steam 304240](https://store.steampowered.com/app/304240/) | ✅ Playable, including movies |
-| Resident Evil (1996, `Biohazard.exe`) | Japanese PC release (MediaKite) + [Classic REbirth](https://classicrebirth.com/index.php/downloads/resident-evil-classic-rebirth/) | ✅ Playable, SD or HD textures — ReRun 0.1.1+ |
-| GTA2 (`gta2.exe`) | Rockstar's 1999 freeware release (9.6) | ✅ Playable, full screen, no intro movies — ReRun 0.1.2+ |
+| Game | Store | Status | Setup |
+|------|-------|--------|-------|
+| Resident Evil HD Remaster (`bhd.exe`) | [Steam 304240](https://store.steampowered.com/app/304240/) | ✅ Playable, including movies | [Guide](https://studiocamera.app/guides/resident-evil-hd-remaster-on-mac/) |
+| Resident Evil (1996, `Biohazard.exe`) | Japanese PC release (MediaKite) + [Classic REbirth](https://classicrebirth.com/index.php/downloads/resident-evil-classic-rebirth/) | ✅ Playable, SD or HD textures — ReRun 0.1.1+ | [Guide](https://studiocamera.app/guides/resident-evil-1996-on-mac/) |
+| GTA2 (`gta2.exe`) | Rockstar's 1999 freeware release (9.6) | ✅ Playable, full screen, no intro movies — ReRun 0.1.2+ | [Guide](https://studiocamera.app/guides/gta2-on-mac/) |
 
 More games are planned — each one gets the same care: its movies, full screen
 and frame rate working out of the box.
@@ -52,7 +54,7 @@ a Gatekeeper warning.
 ## Resident Evil HD Remaster
 
 Pick **HD Remaster** at the top of the window. Illustrated steps:
-[the guide's HD Remaster section](https://studiocamera.app/guides/resident-evil-on-mac/#hd-remaster).
+[the HD Remaster setup guide](https://studiocamera.app/guides/resident-evil-hd-remaster-on-mac/).
 
 1. **Set Up** — downloads Wine, the graphics and video components and Steam
    (about 250 MB) and creates a Windows environment.
@@ -74,7 +76,7 @@ game included, instead of downloading everything again.
 The original PC port, played from a folder you put together. Classic REbirth
 only supports the **Japanese release by MediaKite** — not the US or European
 ones. Full walkthrough:
-[the guide's Resident Evil (1996) section](https://studiocamera.app/guides/resident-evil-on-mac/#classic).
+[the Resident Evil (1996) setup guide](https://studiocamera.app/guides/resident-evil-1996-on-mac/).
 
 1. **Build the game folder.** Create a folder and copy `Biohazard.exe` and the
    `JPN` folder (inside `horr` on the CD) into it. Without the MediaKite CD, use
@@ -116,6 +118,7 @@ Biohazard PC/
 ## GTA2
 
 The freeware release Rockstar gave away in 2004, played from its folder.
+Step by step: [the GTA2 setup guide](https://studiocamera.app/guides/gta2-on-mac/).
 
 1. Put the extracted GTA2 folder (the one with `gta2.exe`) anywhere on your Mac.
 2. **In ReRun**, pick **GTA2**. Press **Set Up** if you haven't (Wine only, no
