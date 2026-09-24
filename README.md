@@ -2,7 +2,8 @@
 
 # ReRun
 
-Play classic Windows games on a Mac with Apple silicon.
+Play classic Windows games on a Mac with Apple silicon —
+Resident Evil HD Remaster, the original Resident Evil and GTA2.
 One button sets everything up, a second one plays.
 
 ReRun downloads a Wine build, the graphics and video components the game needs,
@@ -19,6 +20,7 @@ game with **Play**: no bottles, wrappers or terminal.
 |------|-------|--------|
 | Resident Evil HD Remaster (`bhd.exe`) | [Steam 304240](https://store.steampowered.com/app/304240/) | ✅ Playable, including movies |
 | Resident Evil (1996, `Biohazard.exe`) | Japanese PC release (MediaKite) + [Classic REbirth](https://classicrebirth.com/index.php/downloads/resident-evil-classic-rebirth/) | ✅ Playable, SD or HD textures — ReRun 0.1.1+ |
+| GTA2 (`gta2.exe`) | Rockstar's 1999 freeware release (9.6) | ✅ Playable, full screen, no intro movies — ReRun 0.1.2+ |
 
 More games are planned — each one gets the same care: its movies, full screen
 and frame rate working out of the box.
@@ -27,10 +29,10 @@ and frame rate working out of the box.
 
 - A Mac with Apple silicon, running **macOS 26** or later
 - **Rosetta 2** (Wine runs as an x86_64 process)
-- Your own copy of the game: HD Remaster on Steam, or the Japanese PC release
-  of the 1996 game
+- Your own copy of the game: HD Remaster on Steam, the Japanese PC release
+  of the 1996 game, or GTA2's freeware release
 - About **20 GB** of free space for Wine, Steam and the HD Remaster
-  (about 1 GB for Wine alone, for the classic game)
+  (about 1 GB for Wine alone, for the classic game and GTA2)
 
 Rosetta is a one-time install if you have never opened an Intel app:
 
@@ -57,6 +59,11 @@ Pick **HD Remaster** at the top of the window. Illustrated steps:
 2. **Install in Steam** — Steam opens; sign in and install
    Resident Evil HD Remaster. ReRun notices when the download finishes.
 3. **Play** — Steam starts with the game.
+
+Turn on **Door skip** to cut the door animations between rooms. ReRun downloads
+[ThirteenAG's door skip plugin](https://github.com/ThirteenAG/RE0.RE1.DoorSkipPlugin)
+(pinned to its checksum) with the Ultimate ASI Loader as `dinput8.dll` into the
+game folder; turning it off removes the plugin again.
 
 Already have the game in **CrossOver, Whisky, Sikarugir, GameToMac or Pixel
 Port**? ReRun finds that Steam and offers to copy it, sign-in and downloaded
@@ -106,6 +113,28 @@ Biohazard PC/
   writes past its texture buffer and crashes under Wine, so ReRun never loads
   `.asi` mods; HD Loader reads the same `hires` pack.
 
+## GTA2
+
+The freeware release Rockstar gave away in 2004, played from its folder.
+
+1. Put the extracted GTA2 folder (the one with `gta2.exe`) anywhere on your Mac.
+2. **In ReRun**, pick **GTA2**. Press **Set Up** if you haven't (Wine only, no
+   Steam), then **Choose Game Folder**.
+3. **Play** — the game runs full screen at your display's resolution.
+
+**What ReRun changes.** Nothing you put in the folder is modified.
+
+- GTA2 only runs in 16-bit color and switches to 640×480 for its menus, a mode
+  Wine's Mac driver doesn't list, so ReRun plays it in a Wine virtual desktop
+  whose own mode list has it.
+- It writes `dmavideo-rerun.dll` beside the game's `dmavideo.dll`: the game
+  takes exclusive full screen before changing the display mode, and under Wine
+  every mode switch then drew into a drawable of the old size — a black
+  screen. The copy swaps those two calls.
+- Its video settings (Direct3D renderer, full-screen size) go into the Wine
+  prefix's registry; controls, sound and your name stay the game's own.
+- The intro movies are off: the Bink player faults on them under Wine.
+
 ## Options
 
 - **Graphics** (HD Remaster) — *OpenGL (WineD3D)* or *Vulkan (DXVK)* through MoltenVK to Metal.
@@ -115,6 +144,7 @@ Biohazard PC/
 - **Settings → Data folder** — where Wine, Steam and the game live
   (default `~/Library/Application Support/ReRun`). Choose it before setting up.
 - **Settings → Metal performance HUD** — frame rate and GPU overlay.
+- **Door skip** (HD Remaster) — skips the door animations between rooms.
 - **HD textures** (classic) — the `hires` pack through HD Loader, or the
   original look.
 - **⋯ menu** — open Steam or choose the game folder, show logs, or stop the game.
@@ -144,6 +174,7 @@ Biohazard PC/
 | GStreamer + gst-libav, MoltenVK, DXVK-macOS (d9vk), gnutls | [Sikarugir wrapper template](https://github.com/Sikarugir-App/Wrapper) |
 | Steam client | Valve's `SteamSetup.exe` |
 | HD Loader (classic, HD textures) | [bio1hd-rework](https://github.com/Madxbio97/bio1hd-rework) |
+| Door skip plugin + Ultimate ASI Loader (HD Remaster) | [RE0.RE1.DoorSkipPlugin](https://github.com/ThirteenAG/RE0.RE1.DoorSkipPlugin) |
 
 Every download is pinned to a SHA-256 checksum and resumes after an interruption.
 
@@ -154,9 +185,10 @@ ReRun stands on [Wine](https://www.winehq.org), [Sikarugir](https://github.com/S
 and [GStreamer](https://gstreamer.freedesktop.org). The classic game runs on
 [Classic REbirth](https://classicrebirth.com) by Gemini, with HD textures from the
 Resident Evil HD mod and [HD Loader](https://github.com/Madxbio97/bio1hd-rework).
+Door skip is [ThirteenAG](https://github.com/ThirteenAG)'s plugin.
 
-ReRun is not affiliated with Capcom or Valve. Resident Evil is a trademark of
-Capcom; Steam is a trademark of Valve. You need to own the games you play. ReRun doesn't include or download the
+ReRun is not affiliated with Capcom, Rockstar or Valve. Resident Evil is a trademark of
+Capcom; GTA2 is a trademark of Take-Two Interactive; Steam is a trademark of Valve. You need to own the games you play. ReRun doesn't include or download the
 games, Classic REbirth or the HD texture pack.
 
 ---
