@@ -9,8 +9,9 @@ ReRun downloads a Wine build, the graphics and video components the game needs,
 and — for Steam games — the Steam client into a folder it manages, then plays the
 game with **Play**: no bottles, wrappers or terminal.
 
-**Step-by-step setup guide, from a fresh Mac to the first room:**
-[studiocamera.app/guides/resident-evil-on-mac](https://studiocamera.app/guides/resident-evil-on-mac/)
+🌐 **Website:** [studiocamera.app/rerun](https://studiocamera.app/rerun/)
+📖 **Step-by-step setup guide, from a fresh Mac to the first room:**
+[Resident Evil on a Mac, from zero](https://studiocamera.app/guides/resident-evil-on-mac/)
 
 ## Supported games
 
@@ -48,7 +49,8 @@ a Gatekeeper warning.
 
 ## Resident Evil HD Remaster
 
-Pick **HD Remaster** at the top of the window.
+Pick **HD Remaster** at the top of the window. Illustrated steps:
+[the guide's HD Remaster section](https://studiocamera.app/guides/resident-evil-on-mac/#hd-remaster).
 
 1. **Set Up** — downloads Wine, the graphics and video components and Steam
    (about 250 MB) and creates a Windows environment.
@@ -64,7 +66,8 @@ game included, instead of downloading everything again.
 
 The original PC port, played from a folder you put together. Classic REbirth
 only supports the **Japanese release by MediaKite** — not the US or European
-ones.
+ones. Full walkthrough:
+[the guide's Resident Evil (1996) section](https://studiocamera.app/guides/resident-evil-on-mac/#classic).
 
 1. **Build the game folder.** Create a folder and copy `Biohazard.exe` and the
    `JPN` folder (inside `horr` on the CD) into it. Without the MediaKite CD, use
