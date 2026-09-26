@@ -3,7 +3,7 @@
 # ReRun
 
 Play classic Windows games on a Mac with Apple silicon —
-Resident Evil HD Remaster, the original Resident Evil and GTA2.
+Resident Evil HD Remaster, the original Resident Evil, GTA and GTA2.
 One button sets everything up, a second one plays.
 
 ReRun downloads a Wine build, the graphics and video components the game needs,
@@ -14,6 +14,7 @@ game with **Play**: no bottles, wrappers or terminal.
 📖 **Step-by-step setup guides, from a fresh Mac to the first room:**
 [Resident Evil HD Remaster](https://studiocamera.app/guides/resident-evil-hd-remaster-on-mac/) ·
 [Resident Evil (1996)](https://studiocamera.app/guides/resident-evil-1996-on-mac/) ·
+[GTA](https://studiocamera.app/guides/gta-on-mac/) ·
 [GTA2](https://studiocamera.app/guides/gta2-on-mac/)
 
 ## Supported games
@@ -22,6 +23,7 @@ game with **Play**: no bottles, wrappers or terminal.
 |------|-------|--------|-------|
 | Resident Evil HD Remaster (`bhd.exe`) | [Steam 304240](https://store.steampowered.com/app/304240/) | ✅ Playable, including movies | [Guide](https://studiocamera.app/guides/resident-evil-hd-remaster-on-mac/) |
 | Resident Evil (1996, `Biohazard.exe`) | Japanese PC release (MediaKite) + [Classic REbirth](https://classicrebirth.com/index.php/downloads/resident-evil-classic-rebirth/) | ✅ Playable, SD or HD textures — ReRun 0.1.1+ | [Guide](https://studiocamera.app/guides/resident-evil-1996-on-mac/) |
+| GTA (1997, `GTAWIN.EXE`) | The Windows version, with its `GTADATA` folder | ✅ Playable, full screen at 800×600 in 32-bit color — ReRun 0.1.5+ | [Guide](https://studiocamera.app/guides/gta-on-mac/) |
 | GTA2 (`gta2.exe`) | Version 9.6: Rockstar's 2004 freeware release or a patched retail copy | ✅ Playable — widescreen with the [gta2dx9](https://github.com/gebdag/gta2-rtx-remix) renderer (freeware release) or 4:3, dusk or noon, optional HD textures — ReRun 0.1.4+ | [Guide](https://studiocamera.app/guides/gta2-on-mac/) |
 
 More games are planned — each one gets the same care: its movies, full screen
@@ -32,9 +34,10 @@ and frame rate working out of the box.
 - A Mac with Apple silicon, running **macOS 26** or later
 - **Rosetta 2** (Wine runs as an x86_64 process)
 - Your own copy of the game: HD Remaster on Steam, the Japanese PC release
-  of the 1996 game, or GTA2 9.6 (the freeware release for widescreen)
+  of the 1996 game, GTA's Windows version, or GTA2 9.6 (the freeware release
+  for widescreen)
 - About **20 GB** of free space for Wine, Steam and the HD Remaster
-  (about 1 GB for Wine alone, for the classic game and GTA2)
+  (about 1 GB for Wine alone, for the classic game, GTA and GTA2)
 
 Rosetta is a one-time install if you have never opened an Intel app:
 
@@ -114,6 +117,44 @@ Biohazard PC/
   to a commit and checksum) into the folder. The HD mod's own `bio1hd.asi`
   writes past its texture buffer and crashes under Wine, so ReRun never loads
   `.asi` mods; HD Loader reads the same `hires` pack.
+
+## GTA
+
+The 1997 original, its Windows version: `GTAWIN.EXE` in a `GTAWIN` folder
+beside the game's `GTADATA`, which it reads as `..\GTADATA`. Step by step:
+[the GTA setup guide](https://studiocamera.app/guides/gta-on-mac/).
+
+1. Put the game folder (the one with `GTAWIN` and `GTADATA`) anywhere on your Mac.
+2. **In ReRun**, pick **GTA**. Press **Set Up** if you haven't (Wine only, no
+   Steam), then **Choose Game Folder** and pick the game's folder or its `GTAWIN`.
+3. **Play**. The first time, ReRun downloads cnc-ddraw (400 KB). The game fills
+   the screen in 4:3; the menus are 640×480, the city 800×600 in 32-bit color.
+
+You don't need the game's `SETTINGS.EXE` or `GTA.REG`.
+
+```
+GTA/
+├── GTAWIN/
+│   ├── GTAWIN.EXE
+│   ├── ddraw.dll    ← cnc-ddraw, written by ReRun
+│   └── ddraw.ini    ← its settings, written by ReRun
+└── GTADATA/
+    └── player_a.dat
+```
+
+**What ReRun changes.**
+
+- GTA draws in 8-bit and 32-bit DirectDraw. Wine's own DirectDraw runs it, but
+  on a Mac nothing reaches the screen, so ReRun puts
+  [cnc-ddraw](https://github.com/FunkyFr3sh/cnc-ddraw) (pinned to its
+  checksum) beside `GTAWIN.EXE`, which scales the game to a borderless
+  full-screen window through OpenGL.
+- The game keeps the mode it plays in inside `GTADATA\player_a.dat`, and the menu
+  that changes it can't be reached, so a copy set to 320×200 stays there. ReRun
+  sets that one byte to 800×600 at 32 bits, the game's highest mode, which also
+  uses its 24-bit textures. Nothing else in the file changes.
+- It writes the game's registry settings (English, installed in its folder). The
+  keys are written only when missing, so changes made in `SETTINGS.EXE` stay.
 
 ## GTA2
 
@@ -217,6 +258,7 @@ the renderer without Remix and lights dusk itself, with Direct3D's lights.
 - **Door skip** (HD Remaster) — skips the door animations between rooms.
 - **HD textures** (classic) — the `hires` pack through HD Loader, or the
   original look.
+- **GTA** — no switches: full screen, 4:3, 800×600 in 32-bit color.
 - **Widescreen** (GTA2, with gta2dx9 in the folder) — 16:9, or GTA2's own 4:3.
 - **Dusk** (GTA2) — the levels' dusk with lamps and headlights, or noon.
 - **HD textures** (GTA2 widescreen) — the city's tiles upscaled 4×, made from
@@ -241,6 +283,10 @@ the renderer without Remix and lights dusk itself, with Direct3D's lights.
   version 9.6, or the gta2dx9 zip replaced `dmavideo.dll`. Put the game's own back.
 - **"The gta2dx9 renderer needs the freeware release's gta2.exe"** — the folder
   has a retail `gta2.exe`. Use the freeware release, or turn Widescreen off.
+- **GTA says "Please run 'Settings' first"** — its keys are missing. Press Play
+  in ReRun again; it writes them before starting.
+- **GTA shows a black screen** — cnc-ddraw isn't beside `GTAWIN.EXE`. Start
+  the game from ReRun, which puts it back.
 - **GTA2 froze** — update to ReRun 0.1.4 or later, then play again; it turns
   off the Direct3D command thread that hung. If it still freezes, leave it
   frozen and attach *⋯ → Show Logs* to an issue.
@@ -258,6 +304,7 @@ the renderer without Remix and lights dusk itself, with Direct3D's lights.
 | Steam client | Valve's `SteamSetup.exe` |
 | HD Loader (classic, HD textures) | [bio1hd-rework](https://github.com/Madxbio97/bio1hd-rework) |
 | Door skip plugin + Ultimate ASI Loader (HD Remaster) | [RE0.RE1.DoorSkipPlugin](https://github.com/ThirteenAG/RE0.RE1.DoorSkipPlugin) |
+| cnc-ddraw 7.1.0.0 (GTA) | [cnc-ddraw](https://github.com/FunkyFr3sh/cnc-ddraw) (MIT) |
 | gta2dx9 renderer (GTA2 widescreen): ReRun's build ships in the app, you add the rest | [gta2-rtx-remix](https://github.com/gebdag/gta2-rtx-remix) (MIT) |
 | Real-ESRGAN x4plus, ncnn/Vulkan (GTA2 HD textures) | [Real-ESRGAN v0.2.5.0](https://github.com/xinntao/Real-ESRGAN) (BSD-3-Clause) |
 
@@ -270,13 +317,14 @@ ReRun stands on [Wine](https://www.winehq.org), [Sikarugir](https://github.com/S
 and [GStreamer](https://gstreamer.freedesktop.org). The classic game runs on
 [Classic REbirth](https://classicrebirth.com) by Gemini, with HD textures from the
 Resident Evil HD mod and [HD Loader](https://github.com/Madxbio97/bio1hd-rework).
-Door skip is [ThirteenAG](https://github.com/ThirteenAG)'s plugin. GTA2's
+Door skip is [ThirteenAG](https://github.com/ThirteenAG)'s plugin. GTA draws
+through [FunkyFr3sh](https://github.com/FunkyFr3sh)'s cnc-ddraw. GTA2's
 widescreen renderer is [gebdag](https://github.com/gebdag)'s gta2dx9, and its HD
 textures are upscaled with [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)
 by Xintao Wang et al.
 
 ReRun is not affiliated with Capcom, Rockstar or Valve. Resident Evil is a trademark of
-Capcom; GTA2 is a trademark of Take-Two Interactive; Steam is a trademark of Valve. You need to own the games you play. ReRun doesn't include or download the
+Capcom; GTA and GTA2 are trademarks of Take-Two Interactive; Steam is a trademark of Valve. You need to own the games you play. ReRun doesn't include or download the
 games, Classic REbirth or the Resident Evil HD texture pack. It includes its own
 build of gta2dx9 (MIT license); GTA2's HD textures are made from your copy of the
 game on your Mac, never downloaded.
