@@ -22,7 +22,7 @@ game with **Play**: no bottles, wrappers or terminal.
 |------|-------|--------|-------|
 | Resident Evil HD Remaster (`bhd.exe`) | [Steam 304240](https://store.steampowered.com/app/304240/) | ✅ Playable, including movies | [Guide](https://studiocamera.app/guides/resident-evil-hd-remaster-on-mac/) |
 | Resident Evil (1996, `Biohazard.exe`) | Japanese PC release (MediaKite) + [Classic REbirth](https://classicrebirth.com/index.php/downloads/resident-evil-classic-rebirth/) | ✅ Playable, SD or HD textures — ReRun 0.1.1+ | [Guide](https://studiocamera.app/guides/resident-evil-1996-on-mac/) |
-| GTA2 (`gta2.exe`) | Version 9.6: Rockstar's 2004 freeware release or a patched retail copy | ✅ Playable — widescreen with the [gta2dx9](https://github.com/gebdag/gta2-rtx-remix) renderer (freeware release), or 4:3 with dusk lighting — ReRun 0.1.3+ | [Guide](https://studiocamera.app/guides/gta2-on-mac/) |
+| GTA2 (`gta2.exe`) | Version 9.6: Rockstar's 2004 freeware release or a patched retail copy | ✅ Playable — widescreen with the [gta2dx9](https://github.com/gebdag/gta2-rtx-remix) renderer (freeware release) or 4:3, dusk or noon, optional HD textures — ReRun 0.1.4+ | [Guide](https://studiocamera.app/guides/gta2-on-mac/) |
 
 More games are planned — each one gets the same care: its movies, full screen
 and frame rate working out of the box.
@@ -139,13 +139,18 @@ Both play; only the freeware one works with the widescreen renderer.
 3. **In ReRun**, pick **GTA2**. Press **Set Up** if you haven't (Wine only, no
    Steam), then **Choose Game Folder**.
 4. **Widescreen** on or off, then **Play**.
-   - **On** — gta2dx9 draws the game at 16:9 at your display's resolution, with
-     the intro movie. The city is always in daylight: the renderer's lighting
-     only reaches RTX Remix.
-   - **Off** (or without gta2dx9) — GTA2's own renderer, 4:3 at 1280×960 with the
-     levels' dusk lighting, no intro movies. Wine keeps that mode in the top left
-     corner, so ReRun covers the rest of the screen, the menu bar and the Dock in
-     black while the game is in front.
+   - **On** — ReRun's build of gta2dx9 draws the game at 16:9 at your display's
+     resolution, with the intro movie.
+   - **Off** (or without gta2dx9) — GTA2's own renderer, 4:3 at 1280×960, no
+     intro movies. Wine keeps that mode in the top left corner, so ReRun covers
+     the rest of the screen, the menu bar and the Dock in black while the game
+     is in front.
+5. **Dusk** — on, the levels' dusk lit by street lamps and headlights; off, noon.
+   Works with both renderers.
+6. **HD textures** (widescreen only) — the city's tiles upscaled 4× with
+   [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN). The pack is made on
+   your Mac from your own copy of the game the first time you play with it on:
+   a few minutes, about 400 MB in a `gta2hd` folder beside the game.
 
 ```
 GTA2/
@@ -170,7 +175,12 @@ Controls, sound and your name stay the game's own.
   display the mission messages (text and portrait) were drawn below the bottom
   edge — on Windows too. ReRun always gives the game a 4:3 screen size: with
   gta2dx9 that only lays out the HUD, and the world is still drawn at 16:9.
-- **Widescreen** writes `gta2-rerun.exe`, a copy of `gta2.exe` with one check
+- **Widescreen** plays `gta2dx9-rerun.dll`, ReRun's build of gebdag's
+  renderer, copied beside the folder's `gta2dx9.dll` (which stays as it came).
+  The original only lights the city through RTX Remix, so it was always
+  daylight; ReRun's build lights dusk with Direct3D's own lights, up to eight
+  lamps and headlights at a time, and can draw the HD textures pack.
+- It also writes `gta2-rerun.exe`, a copy of `gta2.exe` with one check
   patched. Losing focus, GTA2 closes its screen and minimizes itself, and Wine
   never restores it, so switching apps froze the game; the copy keeps running
   in the background. gta2dx9 presents into a child of the game's window
@@ -183,11 +193,17 @@ Controls, sound and your name stay the game's own.
   restores the window the game minimizes on losing focus, and the game reopens
   its screen when it's active again. The intro movies are off: the Bink player
   faults on them under Wine.
+- **No more freezes.** Before 0.1.4, GTA2 could stop drawing and responding
+  after anything from a minute to two hours, in every mode, with the game
+  waiting forever on Wine's Direct3D command thread. ReRun now turns that
+  thread off for GTA2 only (`csmt=0` in the Wine prefix), so Direct3D runs on
+  the game's own thread. Widescreen at dusk, which froze within minutes, has run
+  30 minutes clean.
 
 **Why no ray tracing.** gta2dx9 was written for RTX Remix, which path traces
 through Vulkan ray tracing and NVIDIA's DLSS, NRD and RTXDI. MoltenVK has no
 ray-tracing pipelines and none of NVIDIA's libraries run on a Mac, so ReRun uses
-the renderer without Remix: 3D and 16:9, but unlit.
+the renderer without Remix and lights dusk itself, with Direct3D's lights.
 
 ## Options
 
@@ -201,8 +217,10 @@ the renderer without Remix: 3D and 16:9, but unlit.
 - **Door skip** (HD Remaster) — skips the door animations between rooms.
 - **HD textures** (classic) — the `hires` pack through HD Loader, or the
   original look.
-- **Widescreen** (GTA2, with gta2dx9 in the folder) — 16:9 in daylight, or
-  GTA2's own 4:3 with dusk lighting.
+- **Widescreen** (GTA2, with gta2dx9 in the folder) — 16:9, or GTA2's own 4:3.
+- **Dusk** (GTA2) — the levels' dusk with lamps and headlights, or noon.
+- **HD textures** (GTA2 widescreen) — the city's tiles upscaled 4×, made from
+  your game's files on first use.
 - **⋯ menu** — open Steam or choose the game folder, show logs, or stop the game.
 
 ## Troubleshooting
@@ -223,6 +241,9 @@ the renderer without Remix: 3D and 16:9, but unlit.
   version 9.6, or the gta2dx9 zip replaced `dmavideo.dll`. Put the game's own back.
 - **"The gta2dx9 renderer needs the freeware release's gta2.exe"** — the folder
   has a retail `gta2.exe`. Use the freeware release, or turn Widescreen off.
+- **GTA2 froze** — update to ReRun 0.1.4 or later, then play again; it turns
+  off the Direct3D command thread that hung. If it still freezes, leave it
+  frozen and attach *⋯ → Show Logs* to an issue.
 - **GTA2 says "Unable to open file: player\plyslot0.dat"** — the folder has no
   `player` folder. Copy it from an installed GTA2.
 - **Anything else** — *⋯ → Show Logs* opens the Wine and Steam logs. Please
@@ -237,7 +258,8 @@ the renderer without Remix: 3D and 16:9, but unlit.
 | Steam client | Valve's `SteamSetup.exe` |
 | HD Loader (classic, HD textures) | [bio1hd-rework](https://github.com/Madxbio97/bio1hd-rework) |
 | Door skip plugin + Ultimate ASI Loader (HD Remaster) | [RE0.RE1.DoorSkipPlugin](https://github.com/ThirteenAG/RE0.RE1.DoorSkipPlugin) |
-| gta2dx9 renderer (GTA2 widescreen, you add it) | [gta2-rtx-remix](https://github.com/gebdag/gta2-rtx-remix) |
+| gta2dx9 renderer (GTA2 widescreen): ReRun's build ships in the app, you add the rest | [gta2-rtx-remix](https://github.com/gebdag/gta2-rtx-remix) (MIT) |
+| Real-ESRGAN x4plus, ncnn/Vulkan (GTA2 HD textures) | [Real-ESRGAN v0.2.5.0](https://github.com/xinntao/Real-ESRGAN) (BSD-3-Clause) |
 
 Every download is pinned to a SHA-256 checksum and resumes after an interruption.
 
@@ -249,11 +271,15 @@ and [GStreamer](https://gstreamer.freedesktop.org). The classic game runs on
 [Classic REbirth](https://classicrebirth.com) by Gemini, with HD textures from the
 Resident Evil HD mod and [HD Loader](https://github.com/Madxbio97/bio1hd-rework).
 Door skip is [ThirteenAG](https://github.com/ThirteenAG)'s plugin. GTA2's
-widescreen renderer is [gebdag](https://github.com/gebdag)'s gta2dx9.
+widescreen renderer is [gebdag](https://github.com/gebdag)'s gta2dx9, and its HD
+textures are upscaled with [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)
+by Xintao Wang et al.
 
 ReRun is not affiliated with Capcom, Rockstar or Valve. Resident Evil is a trademark of
 Capcom; GTA2 is a trademark of Take-Two Interactive; Steam is a trademark of Valve. You need to own the games you play. ReRun doesn't include or download the
-games, Classic REbirth, the HD texture pack or gta2dx9.
+games, Classic REbirth or the Resident Evil HD texture pack. It includes its own
+build of gta2dx9 (MIT license); GTA2's HD textures are made from your copy of the
+game on your Mac, never downloaded.
 
 ---
 
