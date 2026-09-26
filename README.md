@@ -22,7 +22,7 @@ game with **Play**: no bottles, wrappers or terminal.
 |------|-------|--------|-------|
 | Resident Evil HD Remaster (`bhd.exe`) | [Steam 304240](https://store.steampowered.com/app/304240/) | ✅ Playable, including movies | [Guide](https://studiocamera.app/guides/resident-evil-hd-remaster-on-mac/) |
 | Resident Evil (1996, `Biohazard.exe`) | Japanese PC release (MediaKite) + [Classic REbirth](https://classicrebirth.com/index.php/downloads/resident-evil-classic-rebirth/) | ✅ Playable, SD or HD textures — ReRun 0.1.1+ | [Guide](https://studiocamera.app/guides/resident-evil-1996-on-mac/) |
-| GTA2 (`gta2.exe`) | Rockstar's 1999 freeware release (9.6) | ✅ Playable, full screen, no intro movies — ReRun 0.1.2+ | [Guide](https://studiocamera.app/guides/gta2-on-mac/) |
+| GTA2 (`gta2.exe`) | Version 9.6: Rockstar's 2004 freeware release or a patched retail copy | ✅ Playable — widescreen with the [gta2dx9](https://github.com/gebdag/gta2-rtx-remix) renderer (freeware release), or 4:3 with dusk lighting — ReRun 0.1.3+ | [Guide](https://studiocamera.app/guides/gta2-on-mac/) |
 
 More games are planned — each one gets the same care: its movies, full screen
 and frame rate working out of the box.
@@ -32,7 +32,7 @@ and frame rate working out of the box.
 - A Mac with Apple silicon, running **macOS 26** or later
 - **Rosetta 2** (Wine runs as an x86_64 process)
 - Your own copy of the game: HD Remaster on Steam, the Japanese PC release
-  of the 1996 game, or GTA2's freeware release
+  of the 1996 game, or GTA2 9.6 (the freeware release for widescreen)
 - About **20 GB** of free space for Wine, Steam and the HD Remaster
   (about 1 GB for Wine alone, for the classic game and GTA2)
 
@@ -117,26 +117,77 @@ Biohazard PC/
 
 ## GTA2
 
-The freeware release Rockstar gave away in 2004, played from its folder.
-Step by step: [the GTA2 setup guide](https://studiocamera.app/guides/gta2-on-mac/).
+Version 9.6, played from its folder. Step by step:
+[the GTA2 setup guide](https://studiocamera.app/guides/gta2-on-mac/).
 
-1. Put the extracted GTA2 folder (the one with `gta2.exe`) anywhere on your Mac.
-2. **In ReRun**, pick **GTA2**. Press **Set Up** if you haven't (Wine only, no
+Two builds carry that version: the **2004 freeware release** Rockstar gave away
+(installer [archived on the Internet Archive](https://archive.org/details/gta2_rockstar-classics),
+1.6 MB `gta2.exe`) and **1999 retail copies** patched to 9.6 (3.5 MB `gta2.exe`).
+Both play; only the freeware one works with the widescreen renderer.
+
+> **Correction:** ReRun 0.1.2 and its docs said they played the freeware
+> release, but that version was tested with a retail copy. Both share the same
+> `dmavideo.dll`, so the freeware release plays too; 0.1.3 was tested with both.
+
+1. Put the GTA2 folder (the one with `gta2.exe` and a `player` folder with the
+   save slots) anywhere on your Mac.
+2. **Widescreen (optional, freeware release only)** — from the
+   [gta2dx9 release](https://github.com/gebdag/gta2-rtx-remix/releases), copy
+   `gta2dx9.dll`, `gta2dx9_vid.dll` and the `gta2dx9*.ini` files into the folder.
+   **Keep the game's own `d3ddll.dll` and `dmavideo.dll`** — the zip has copies
+   under those names, and ReRun needs the originals when Widescreen is off.
+3. **In ReRun**, pick **GTA2**. Press **Set Up** if you haven't (Wine only, no
    Steam), then **Choose Game Folder**.
-3. **Play** — the game runs full screen at your display's resolution.
+4. **Widescreen** on or off, then **Play**.
+   - **On** — gta2dx9 draws the game at 16:9 at your display's resolution, with
+     the intro movie. The city is always in daylight: the renderer's lighting
+     only reaches RTX Remix.
+   - **Off** (or without gta2dx9) — GTA2's own renderer, 4:3 at 1280×960 with the
+     levels' dusk lighting, no intro movies. Wine keeps that mode in the top left
+     corner, so ReRun covers the rest of the screen, the menu bar and the Dock in
+     black while the game is in front.
 
-**What ReRun changes.** Nothing you put in the folder is modified.
+```
+GTA2/
+├── gta2.exe          ← freeware build for widescreen
+├── d3ddll.dll        ← the game's own
+├── dmavideo.dll      ← the game's own
+├── gta2dx9.dll       ← optional, widescreen
+├── gta2dx9_vid.dll   ← optional, widescreen
+├── gta2dx9.ini       ← optional, widescreen
+├── player/
+└── data/
+```
+
+**What ReRun changes.** Nothing you put in the folder is modified; ReRun writes
+copies beside it and keeps the video settings in the Wine prefix's registry.
+Controls, sound and your name stay the game's own.
 
 - GTA2 only runs in 16-bit color and switches to 640×480 for its menus, a mode
   Wine's Mac driver doesn't list, so ReRun plays it in a Wine virtual desktop
   whose own mode list has it.
-- It writes `dmavideo-rerun.dll` beside the game's `dmavideo.dll`: the game
-  takes exclusive full screen before changing the display mode, and under Wine
-  every mode switch then drew into a drawable of the old size — a black
-  screen. The copy swaps those two calls.
-- Its video settings (Direct3D renderer, full-screen size) go into the Wine
-  prefix's registry; controls, sound and your name stay the game's own.
-- The intro movies are off: the Bink player faults on them under Wine.
+- GTA2 lays out its HUD for a 4:3 screen as wide as the real one. On a 16:9
+  display the mission messages (text and portrait) were drawn below the bottom
+  edge — on Windows too. ReRun always gives the game a 4:3 screen size: with
+  gta2dx9 that only lays out the HUD, and the world is still drawn at 16:9.
+- **Widescreen** writes `gta2-rerun.exe`, a copy of `gta2.exe` with one check
+  patched. Losing focus, GTA2 closes its screen and minimizes itself, and Wine
+  never restores it, so switching apps froze the game; the copy keeps running
+  in the background. gta2dx9 presents into a child of the game's window
+  (`own_window=1` in `gta2dx9.ini`), which ReRun's helper sizes to the screen:
+  its default always-on-top window stayed above every Mac app.
+- **GTA2's own renderer** uses `dmavideo-rerun.dll`, beside the game's
+  `dmavideo.dll`: the game takes exclusive full screen before changing the
+  display mode, and under Wine every mode switch then drew into a drawable of
+  the old size — a black screen. The copy swaps those two calls. ReRun's helper
+  restores the window the game minimizes on losing focus, and the game reopens
+  its screen when it's active again. The intro movies are off: the Bink player
+  faults on them under Wine.
+
+**Why no ray tracing.** gta2dx9 was written for RTX Remix, which path traces
+through Vulkan ray tracing and NVIDIA's DLSS, NRD and RTXDI. MoltenVK has no
+ray-tracing pipelines and none of NVIDIA's libraries run on a Mac, so ReRun uses
+the renderer without Remix: 3D and 16:9, but unlit.
 
 ## Options
 
@@ -150,6 +201,8 @@ Step by step: [the GTA2 setup guide](https://studiocamera.app/guides/gta2-on-mac
 - **Door skip** (HD Remaster) — skips the door animations between rooms.
 - **HD textures** (classic) — the `hires` pack through HD Loader, or the
   original look.
+- **Widescreen** (GTA2, with gta2dx9 in the folder) — 16:9 in daylight, or
+  GTA2's own 4:3 with dusk lighting.
 - **⋯ menu** — open Steam or choose the game folder, show logs, or stop the game.
 
 ## Troubleshooting
@@ -166,6 +219,12 @@ Step by step: [the GTA2 setup guide](https://studiocamera.app/guides/gta2-on-mac
 - **ReRun keeps asking for access to a removable volume** — your data or game
   folder is on an external drive; allow it in System Settings → Privacy &
   Security → Files & Folders → ReRun.
+- **"This GTA2 folder's Dmavideo.dll isn't GTA2 9.6's"** — the folder isn't
+  version 9.6, or the gta2dx9 zip replaced `dmavideo.dll`. Put the game's own back.
+- **"The gta2dx9 renderer needs the freeware release's gta2.exe"** — the folder
+  has a retail `gta2.exe`. Use the freeware release, or turn Widescreen off.
+- **GTA2 says "Unable to open file: player\plyslot0.dat"** — the folder has no
+  `player` folder. Copy it from an installed GTA2.
 - **Anything else** — *⋯ → Show Logs* opens the Wine and Steam logs. Please
   attach them to an [issue](https://github.com/rafabertholdo/rerun/issues).
 
@@ -178,6 +237,7 @@ Step by step: [the GTA2 setup guide](https://studiocamera.app/guides/gta2-on-mac
 | Steam client | Valve's `SteamSetup.exe` |
 | HD Loader (classic, HD textures) | [bio1hd-rework](https://github.com/Madxbio97/bio1hd-rework) |
 | Door skip plugin + Ultimate ASI Loader (HD Remaster) | [RE0.RE1.DoorSkipPlugin](https://github.com/ThirteenAG/RE0.RE1.DoorSkipPlugin) |
+| gta2dx9 renderer (GTA2 widescreen, you add it) | [gta2-rtx-remix](https://github.com/gebdag/gta2-rtx-remix) |
 
 Every download is pinned to a SHA-256 checksum and resumes after an interruption.
 
@@ -188,11 +248,12 @@ ReRun stands on [Wine](https://www.winehq.org), [Sikarugir](https://github.com/S
 and [GStreamer](https://gstreamer.freedesktop.org). The classic game runs on
 [Classic REbirth](https://classicrebirth.com) by Gemini, with HD textures from the
 Resident Evil HD mod and [HD Loader](https://github.com/Madxbio97/bio1hd-rework).
-Door skip is [ThirteenAG](https://github.com/ThirteenAG)'s plugin.
+Door skip is [ThirteenAG](https://github.com/ThirteenAG)'s plugin. GTA2's
+widescreen renderer is [gebdag](https://github.com/gebdag)'s gta2dx9.
 
 ReRun is not affiliated with Capcom, Rockstar or Valve. Resident Evil is a trademark of
 Capcom; GTA2 is a trademark of Take-Two Interactive; Steam is a trademark of Valve. You need to own the games you play. ReRun doesn't include or download the
-games, Classic REbirth or the HD texture pack.
+games, Classic REbirth, the HD texture pack or gta2dx9.
 
 ---
 
