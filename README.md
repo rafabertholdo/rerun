@@ -37,7 +37,8 @@ and frame rate working out of the box.
   of the 1996 game, GTA's Windows version, or GTA2 9.6 (the freeware release
   for widescreen)
 - About **20 GB** of free space for Wine, Steam and the HD Remaster
-  (about 1 GB for Wine alone, for the classic game, GTA and GTA2)
+  (about 1 GB for Wine alone, for the classic game; GTA and GTA2 share their
+  own Wine, about 1 GB more)
 
 Rosetta is a one-time install if you have never opened an Intel app:
 
@@ -127,6 +128,8 @@ beside the game's `GTADATA`, which it reads as `..\GTADATA`. Step by step:
 1. Put the game folder (the one with `GTAWIN` and `GTADATA`) anywhere on your Mac.
 2. **In ReRun**, pick **GTA**. Press **Set Up** if you haven't (Wine only, no
    Steam), then **Choose Game Folder** and pick the game's folder or its `GTAWIN`.
+   GTA and GTA2 have their own Wine (see [GTA2](#gta2)), so after updating from
+   0.1.5 or earlier, press Set Up once more.
 3. **Play**. The first time, ReRun downloads cnc-ddraw (400 KB). The game fills
    the screen in 4:3; the menus are 640×480, the city 800×600 in 32-bit color.
 
@@ -177,8 +180,9 @@ Both play; only the freeware one works with the widescreen renderer.
    `gta2dx9.dll`, `gta2dx9_vid.dll` and the `gta2dx9*.ini` files into the folder.
    **Keep the game's own `d3ddll.dll` and `dmavideo.dll`** — the zip has copies
    under those names, and ReRun needs the originals when Widescreen is off.
-3. **In ReRun**, pick **GTA2**. Press **Set Up** if you haven't (Wine only, no
-   Steam), then **Choose Game Folder**.
+3. **In ReRun**, pick **GTA2**. Press **Set Up** if you haven't (Wine 10.0
+   only, no Steam; once more after updating from 0.1.5 or earlier), then
+   **Choose Game Folder**.
 4. **Widescreen** on or off, then **Play**.
    - **On** — ReRun's build of gta2dx9 draws the game at 16:9 at your display's
      resolution, with the intro movie.
@@ -191,7 +195,8 @@ Both play; only the freeware one works with the widescreen renderer.
 6. **HD textures** (widescreen only) — the city's tiles upscaled 4× with
    [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN). The pack is made on
    your Mac from your own copy of the game the first time you play with it on:
-   a few minutes, about 400 MB in a `gta2hd` folder beside the game.
+   a few minutes, about 400 MB in a `gta2hd` folder beside the game. ReRun
+   downloads the upscaler (about 50 MB) first, if it isn't there yet.
 
 ```
 GTA2/
@@ -234,12 +239,17 @@ Controls, sound and your name stay the game's own.
   restores the window the game minimizes on losing focus, and the game reopens
   its screen when it's active again. The intro movies are off: the Bink player
   faults on them under Wine.
-- **No more freezes.** Before 0.1.4, GTA2 could stop drawing and responding
-  after anything from a minute to two hours, in every mode, with the game
-  waiting forever on Wine's Direct3D command thread. ReRun now turns that
-  thread off for GTA2 only (`csmt=0` in the Wine prefix), so Direct3D runs on
-  the game's own thread. Widescreen at dusk, which froze within minutes, has run
-  30 minutes clean.
+- **No more freezes: GTA runs on Wine 10.0.** GTA2 could stop drawing and
+  responding after anything from a minute to two hours, in every mode. The
+  cause is in Wine 11's macOS build: every call from Windows code into macOS
+  (each OpenGL call among them) switches the thread's GS register with a
+  system call, and under Rosetta that call very occasionally comes back as a
+  `SIGSYS`. Wine then loses the thread, and it dies: first Direct3D's command
+  thread, which left the game waiting forever (0.1.4 turned that thread off),
+  then, since 0.1.4, the game's own. Sikarugir's Wine 10.0 doesn't make that
+  system call, so from 0.1.6 GTA and GTA2 get their own Wine 10.0 and Wine
+  prefix, beside Resident Evil's Wine 11. Widescreen at dusk, which froze
+  within 3–7 minutes on Wine 11, has run 30 minutes clean.
 
 **Why no ray tracing.** gta2dx9 was written for RTX Remix, which path traces
 through Vulkan ray tracing and NVIDIA's DLSS, NRD and RTXDI. MoltenVK has no
@@ -253,7 +263,8 @@ the renderer without Remix and lights dusk itself, with Direct3D's lights.
 - **Full screen** (HD Remaster) — plays borderless at your display's resolution. The game
   always runs at 60 FPS.
 - **Settings → Data folder** — where Wine, Steam and the game live
-  (default `~/Library/Application Support/ReRun`). Choose it before setting up.
+  (default `~/Library/Application Support/ReRun`; GTA and GTA2's Wine is in
+  its `gta` folder). Choose it before setting up.
 - **Settings → Metal performance HUD** — frame rate and GPU overlay.
 - **Door skip** (HD Remaster) — skips the door animations between rooms.
 - **HD textures** (classic) — the `hires` pack through HD Loader, or the
@@ -287,9 +298,9 @@ the renderer without Remix and lights dusk itself, with Direct3D's lights.
   in ReRun again; it writes them before starting.
 - **GTA shows a black screen** — cnc-ddraw isn't beside `GTAWIN.EXE`. Start
   the game from ReRun, which puts it back.
-- **GTA2 froze** — update to ReRun 0.1.4 or later, then play again; it turns
-  off the Direct3D command thread that hung. If it still freezes, leave it
-  frozen and attach *⋯ → Show Logs* to an issue.
+- **GTA2 froze** — update to ReRun 0.1.6 or later and press **Set Up** on the
+  GTA2 page once: it installs the Wine 10.0 that GTA and GTA2 now run on. If it
+  still freezes, leave it frozen and attach *⋯ → Show Logs* to an issue.
 - **GTA2 says "Unable to open file: player\plyslot0.dat"** — the folder has no
   `player` folder. Copy it from an installed GTA2.
 - **Anything else** — *⋯ → Show Logs* opens the Wine and Steam logs. Please
@@ -299,14 +310,15 @@ the renderer without Remix and lights dusk itself, with Direct3D's lights.
 
 | Component | Source |
 |-----------|--------|
-| Wine 11 (x86_64, wow64, with winegstreamer) | [Sikarugir engines](https://github.com/Sikarugir-App/Engines) |
+| Wine 11 (x86_64, wow64, with winegstreamer), for Resident Evil | [Sikarugir engines](https://github.com/Sikarugir-App/Engines) |
+| Wine 10.0, for GTA and GTA2 | [Sikarugir engines](https://github.com/Sikarugir-App/Engines) (`WS12WineSikarugir10.0_6`) |
 | GStreamer + gst-libav, MoltenVK, DXVK-macOS (d9vk), gnutls | [Sikarugir wrapper template](https://github.com/Sikarugir-App/Wrapper) |
 | Steam client | Valve's `SteamSetup.exe` |
 | HD Loader (classic, HD textures) | [bio1hd-rework](https://github.com/Madxbio97/bio1hd-rework) |
 | Door skip plugin + Ultimate ASI Loader (HD Remaster) | [RE0.RE1.DoorSkipPlugin](https://github.com/ThirteenAG/RE0.RE1.DoorSkipPlugin) |
 | cnc-ddraw 7.1.0.0 (GTA) | [cnc-ddraw](https://github.com/FunkyFr3sh/cnc-ddraw) (MIT) |
 | gta2dx9 renderer (GTA2 widescreen): ReRun's build ships in the app, you add the rest | [gta2-rtx-remix](https://github.com/gebdag/gta2-rtx-remix) (MIT) |
-| Real-ESRGAN x4plus, ncnn/Vulkan (GTA2 HD textures) | [Real-ESRGAN v0.2.5.0](https://github.com/xinntao/Real-ESRGAN) (BSD-3-Clause) |
+| Real-ESRGAN x4plus, ncnn/Vulkan (GTA2 HD textures, downloaded on first use) | [Real-ESRGAN v0.2.5.0](https://github.com/xinntao/Real-ESRGAN) (BSD-3-Clause) |
 
 Every download is pinned to a SHA-256 checksum and resumes after an interruption.
 
