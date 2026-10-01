@@ -3,7 +3,7 @@
 # ReRun
 
 Play classic Windows games on a Mac with Apple silicon —
-Resident Evil HD Remaster, the original Resident Evil, GTA and GTA2.
+Resident Evil HD Remaster, the original Resident Evil, GTA, GTA2, and experimental Aion 1.9.
 One button sets everything up, a second one plays.
 
 ReRun downloads a Wine build, the graphics and video components the game needs,
@@ -15,7 +15,8 @@ game with **Play**: no bottles, wrappers or terminal.
 [Resident Evil HD Remaster](https://studiocamera.app/guides/resident-evil-hd-remaster-on-mac/) ·
 [Resident Evil (1996)](https://studiocamera.app/guides/resident-evil-1996-on-mac/) ·
 [GTA](https://studiocamera.app/guides/gta-on-mac/) ·
-[GTA2](https://studiocamera.app/guides/gta2-on-mac/)
+[GTA2](https://studiocamera.app/guides/gta2-on-mac/) ·
+[Aion 1.9](https://studiocamera.app/guides/aion-on-mac/)
 
 ## Supported games
 
@@ -25,6 +26,7 @@ game with **Play**: no bottles, wrappers or terminal.
 | Resident Evil (1996, `Biohazard.exe`) | Japanese PC release (MediaKite) + [Classic REbirth](https://classicrebirth.com/index.php/downloads/resident-evil-classic-rebirth/) | ✅ Playable, SD or HD textures — ReRun 0.1.1+ | [Guide](https://studiocamera.app/guides/resident-evil-1996-on-mac/) |
 | GTA (1997, `GTAWIN.EXE`) | The Windows version, with its `GTADATA` folder | ✅ Playable, full screen at 800×600 in 32-bit color — ReRun 0.1.5+ | [Guide](https://studiocamera.app/guides/gta-on-mac/) |
 | GTA2 (`gta2.exe`) | Version 9.6: Rockstar's 2004 freeware release or a patched retail copy | ✅ Playable — widescreen with the [gta2dx9](https://github.com/gebdag/gta2-rtx-remix) renderer (freeware release) or 4:3, dusk or noon, optional HD textures — ReRun 0.1.4+ | [Guide](https://studiocamera.app/guides/gta2-on-mac/) |
+| Aion 1.9 (`bin32/aion.bin`) | Your own 1.9 Windows client + private server | 🧪 Partly playable; Go migration and graphics compatibility are unfinished — ReRun 0.1.7+ | [Guide](https://studiocamera.app/guides/aion-on-mac/) |
 
 More games are planned — each one gets the same care: its movies, full screen
 and frame rate working out of the box.
@@ -35,10 +37,12 @@ and frame rate working out of the box.
 - **Rosetta 2** (Wine runs as an x86_64 process)
 - Your own copy of the game: HD Remaster on Steam, the Japanese PC release
   of the 1996 game, GTA's Windows version, or GTA2 9.6 (the freeware release
-  for widescreen)
+  for widescreen), or an Aion 1.9 client
 - About **20 GB** of free space for Wine, Steam and the HD Remaster
   (about 1 GB for Wine alone, for the classic game; GTA and GTA2 share their
   own Wine, about 1 GB more)
+
+Aion **This Mac** also needs [Apple’s container tool](https://github.com/apple/container#initial-install), installed separately, and additional disk space for the client, server images, and persistent database. ReRun downloads the selected Go or Java 21 server images on first Play.
 
 Rosetta is a one-time install if you have never opened an Intel app:
 
@@ -276,6 +280,53 @@ the renderer without Remix and lights dusk itself, with Direct3D's lights.
   your game's files on first use.
 - **⋯ menu** — open Steam or choose the game folder, show logs, or stop the game.
 
+## Aion 1.9 (experimental)
+
+Aion can reach login, character selection and the world, and is somewhat
+playable. **This is an early preview, not a complete or fully compatible game
+server.** Bring your own Windows 1.9 client; ReRun does not download the game.
+See the [Aion setup guide](https://studiocamera.app/guides/aion-on-mac/).
+
+1. Pick **Aion**, press **Set Up** if needed, and **Choose Game Folder**: select
+   the folder containing `bin32/aion.bin` and the game's data.
+2. Choose **Server → This Mac** to run locally, **Invite** to join a friend's
+   shared server, or **Address** for a compatible private login server.
+3. For **This Mac**, install [Apple's container tool](https://github.com/apple/container#initial-install),
+   then select **Server software → Go** (default) or **Java 21**. Play pulls the
+   chosen versioned images and starts the database, login, chat and game servers.
+   Accounts are shared between Go and Java, but characters and quest progress
+   use separate databases; switching does not transfer your progress.
+4. Choose **Graphics → OpenGL** or **Metal D9MT (Experimental)**. Metal D9MT
+   uses a separate renderer download on first Play, engine and Wine prefix.
+   Its **Limit to 60 FPS** switch applies on the next Play.
+5. Press **Play** and keep ReRun open: it maintains the local login, game and
+   chat connections. Startup can remain black for about a minute before login.
+
+### Current limitations
+
+- **The Go migration is unfinished.** Login and chat are ported, and character
+  creation, world entry, movement and basic gameplay work. Remaining work
+  includes custom quest and campaign handlers, quest rewards and group credit,
+  combat/item/skill parity, instance scripts, siege battles and the legion
+  warehouse. Many implemented systems still need real 1.9 client validation;
+  automated coverage is not a guarantee that every quest or feature works.
+  Follow [server migration progress](https://github.com/rafabertholdo/AionGo/blob/main/go/PORTING.md)
+  and [quest migration progress](https://github.com/rafabertholdo/AionGo/blob/main/go/QUEST_PORTING.md).
+- **Metal D9MT has visual glitches.** Terrain colors, water effects and
+  intermittent geometry can render incorrectly. Login and some gameplay work,
+  but rendering compatibility and long-session stability remain experimental.
+  OpenGL is an alternative; performance depends on the scene and Mac.
+- **Java 21 is a reference option, not a compatibility guarantee.** Its source
+  still includes known protocol differences from the 1.9 client. It has its
+  own characters and quest progress, separate from Go.
+- **This Mac needs server downloads and a running ReRun.** Server images and
+  data live in Apple's container storage; keep that storage on the internal
+  disk. Closing ReRun disconnects the local connections. If authorization
+  fails, launch with ReRun's **Play**, rather than starting `aion.bin` directly.
+
+The server source and admin website live in [AionGo](https://github.com/rafabertholdo/AionGo).
+The experimental renderer source lives in [AionD9MT](https://github.com/rafabertholdo/AionD9MT).
+
 ## Troubleshooting
 
 - **Black screen after the Capcom logo** — the game's movies need GStreamer.
@@ -335,7 +386,7 @@ widescreen renderer is [gebdag](https://github.com/gebdag)'s gta2dx9, and its HD
 textures are upscaled with [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)
 by Xintao Wang et al.
 
-ReRun is not affiliated with Capcom, Rockstar or Valve. Resident Evil is a trademark of
+ReRun is not affiliated with Capcom, Rockstar, Valve or NCsoft. Aion is a trademark of NCsoft. Resident Evil is a trademark of
 Capcom; GTA and GTA2 are trademarks of Take-Two Interactive; Steam is a trademark of Valve. You need to own the games you play. ReRun doesn't include or download the
 games, Classic REbirth or the Resident Evil HD texture pack. It includes its own
 build of gta2dx9 (MIT license); GTA2's HD textures are made from your copy of the
