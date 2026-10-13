@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# Launch Aion 1.9 under Wine (wined3d / OpenGL — this GPU has no Vulkan driver)
+# against the AionGO login server.
+set -euo pipefail
+
+GAME_DIR="${AION_DIR:-$HOME/Games/Aion}"
+SERVER_HOST="${AION_SERVER:-aiongo.studiocamera.app}"
+SERVER_PORT="${AION_PORT:-2106}"
+
+# Wine 11.0 staging (Kron4ek build) whose 32-bit ntdll.dll has DYNAMIC_BASE cleared,
+# so it maps at its preferred 0x7bc00000. aion.bin's WinLicense copies a syscall
+# stub out of ntdll.dll on disk; that stub hardcodes ntdll's preferred base and
+# crashes when Wine has relocated ntdll.
+WINE_BUILD="${WINE_BUILD:-$HOME/.local/share/wine-builds/wine-11.0-staging-amd64-wow64}"
+export PATH="$WINE_BUILD/bin:$PATH"
+export WINEPREFIX="${WINEPREFIX:-$HOME/.local/share/wineprefixes/aion-wine11.0}"
+# Microsoft's D3DX/D3DCompiler (from the DirectX June 2010 redist) are installed in
+# the prefix's syswow64. Aion compiles its fog and water-caustics pixel shaders at
+# runtime with D3DX; Wine's builtin fails CGRCAion_SystemFog, which leaves grey
+# ground near water, white waterfalls and missing vegetation.
+D3DX_DLLS="$(printf 'd3dx9_%s,' $(seq 24 43))d3dcompiler_42,d3dcompiler_43"
+export WINEDLLOVERRIDES="winemenubuilder.exe=d;d3d9=b;$D3DX_DLLS=n,b;${WINEDLLOVERRIDES:-}"
+
+SERVER_IP="$(getent ahostsv4 "$SERVER_HOST" | awk 'NR==1{print $1}')"
+if [[ -z "$SERVER_IP" ]]; then
+  echo "Could not resolve $SERVER_HOST" >&2
+  exit 1
+fi
+
+if [[ ! -d "$WINEPREFIX" ]]; then
+  echo "Creating Wine prefix at $WINEPREFIX ..."
+  mkdir -p "$WINEPREFIX"
+  WINEDLLOVERRIDES="mscoree,mshtml=d;$WINEDLLOVERRIDES" wineboot --init
+  wineserver -w
+fi
+
+# WinLicense also crashes while unpacking unless aion.bin's kernel32/user32
+# imports resolve to Wine's relay thunks. Install them only for calls from
+# aion.bin, minus the hot functions, and discard the trace output. stderr must
+# be a pipe: with stderr on /dev/null Wine installs no relay thunks.
+RELAY_EXCLUDE="kernel32.TlsGetValue;kernel32.TlsSetValue;kernel32.WideCharToMultiByte;kernel32.MultiByteToWideChar"
+RELAY_EXCLUDE+=";kernel32.WaitForSingleObjectEx;kernel32.WaitForSingleObject;kernel32.GetQueuedCompletionStatus"
+RELAY_EXCLUDE+=";kernel32.QueryPerformanceCounter;kernel32.QueryPerformanceFrequency;kernel32.GetTickCount"
+RELAY_EXCLUDE+=";kernel32.GetLastError;kernel32.SetLastError;kernel32.lstrcpynA;kernel32.InterlockedExchange"
+RELAY_EXCLUDE+=";kernel32.InterlockedCompareExchange;kernel32.Sleep;kernel32.SetEvent;kernel32.ResetEvent;user32.CharLowerA"
+cat > "$WINEPREFIX/aion-relay.reg" <<EOF
+REGEDIT4
+
+[HKEY_CURRENT_USER\\Software\\Wine\\Debug]
+"RelayInclude"="kernel32.*;user32.*"
+"RelayFromInclude"="aion.bin"
+"RelayExclude"="$RELAY_EXCLUDE"
+"RelayFromExclude"=-
+
+[HKEY_CURRENT_USER\\Software\\Wine\\WineDbg]
+"ShowCrashDialog"=dword:00000000
+
+[HKEY_CURRENT_USER\\Software\\Wine\\X11 Driver]
+"UseXIM"="N"
+EOF
+WINEDEBUG=-all wine regedit /S "$WINEPREFIX/aion-relay.reg"
+wineserver -w
+
+# Play borderless at the display's size, as ReRun does. Hyprland gives the window
+# the whole screen; at any other r_Width/r_Height the picture is stretched but the
+# game still maps the mouse to its own resolution, so clicks miss. system.cfg lines
+# are CRLF-separated, each byte inverted; "--" lines are plain comments. The game
+# resaves the file on exit.
+DISPLAY_SIZE="$(hyprctl monitors -j 2>/dev/null | python3 -I -c '
+import json, sys
+mons = json.load(sys.stdin)
+m = next((m for m in mons if m.get("focused")), mons[0])
+w, h = m["width"], m["height"]
+if m.get("transform", 0) % 2: w, h = h, w
+print(round(w / m["scale"]), round(h / m["scale"]))' 2>/dev/null || true)"
+if [[ -n "$DISPLAY_SIZE" && -f "$GAME_DIR/system.cfg" ]]; then
+  python3 -I - "$GAME_DIR/system.cfg" $DISPLAY_SIZE <<'PY'
+import sys
+path, width, height = sys.argv[1], sys.argv[2], sys.argv[3]
+values = {"r_Width": width, "r_Height": height, "r_PseudoFullscreen": "1", "r_Fullscreen": "0"}
+invert = lambda b: bytes(~c & 0xFF for c in b)
+data = open(path, "rb").read()
+lines = data.split(b"\r\n")
+if lines and lines[-1] == b"":
+    lines.pop()
+for i, line in enumerate(lines):
+    if not line or line.startswith(b"--"):
+        continue
+    text = invert(line).decode("latin1")
+    key = text.split("=")[0].strip()
+    if key in values:
+        lines[i] = invert(f'{key} = "{values.pop(key)}"'.encode("latin1"))
+lines += [invert(f'{k} = "{v}"'.encode("latin1")) for k, v in sorted(values.items())]
+updated = b"".join(l + b"\r\n" for l in lines)
+if updated != data:
+    open(path, "wb").write(updated)
+PY
+fi
+
+# fcitx5's XIM swallows the keystrokes before they reach Aion's text boxes.
+export XMODIFIERS="@im=none"
+unset GTK_IM_MODULE QT_IM_MODULE SDL_IM_MODULE
+
+echo "Connecting to $SERVER_HOST ($SERVER_IP:$SERVER_PORT)"
+cd "$GAME_DIR"
+export WINEDEBUG="+relay"
+exec wine bin32/aion.bin -ip:"$SERVER_IP" -port:"$SERVER_PORT" -cc:1 -lang:enu -noweb -noauthgg "$@" \
+  2> >(exec cat > /dev/null)
