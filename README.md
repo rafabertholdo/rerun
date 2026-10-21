@@ -290,7 +290,8 @@ See the [Aion setup guide](https://studiocamera.app/guides/aion-on-mac/).
    the folder containing `bin32/aion.bin` and the game's data.
 2. **Server → AionGO** connects to `aiongo.studiocamera.app` by default.
    Sign in with your AionGO account. This option needs no local server images
-   or container tool. **Invite** joins a friend's shared server, and **Address**
+   or container tool. Since 0.1.10 ReRun checks the server every 30 seconds
+   and disables **Play** with an **Unavailable** badge while it doesn't answer. **Invite** joins a friend's shared server, and **Address**
    connects to a compatible private login server.
 3. For local hosting, choose **This Mac** and install
    [Apple's container tool](https://github.com/apple/container#initial-install).
