@@ -22,7 +22,7 @@ game with **Play**: no bottles, wrappers or terminal.
 
 | Game | Store | Status | Setup |
 |------|-------|--------|-------|
-| Resident Evil HD Remaster (`bhd.exe`) | [Steam 304240](https://store.steampowered.com/app/304240/) | ✅ Playable, including movies | [Guide](https://studiocamera.app/guides/resident-evil-hd-remaster-on-mac/) |
+| Resident Evil HD Remaster (`bhd.exe`) | [Steam 304240](https://store.steampowered.com/app/304240/) | ✅ Playable, including movies — Metal graphics option in ReRun 0.1.11+ | [Guide](https://studiocamera.app/guides/resident-evil-hd-remaster-on-mac/) |
 | Resident Evil (1996, `Biohazard.exe`) | Japanese PC release (MediaKite) + [Classic REbirth](https://classicrebirth.com/index.php/downloads/resident-evil-classic-rebirth/) | ✅ Playable, SD or HD textures — ReRun 0.1.1+ | [Guide](https://studiocamera.app/guides/resident-evil-1996-on-mac/) |
 | GTA (1997, `GTAWIN.EXE`) | The Windows version, with its `GTADATA` folder | ✅ Playable, full screen at 800×600 in 32-bit color — ReRun 0.1.5+ | [Guide](https://studiocamera.app/guides/gta-on-mac/) |
 | GTA2 (`gta2.exe`) | Version 9.6: Rockstar's 2004 freeware release or a patched retail copy | ✅ Playable — widescreen with the [gta2dx9](https://github.com/gebdag/gta2-rtx-remix) renderer (freeware release) or 4:3, dusk or noon, optional HD textures — ReRun 0.1.4+ | [Guide](https://studiocamera.app/guides/gta2-on-mac/) |
@@ -262,8 +262,10 @@ the renderer without Remix and lights dusk itself, with Direct3D's lights.
 
 ## Options
 
-- **Graphics** (HD Remaster) — *OpenGL (WineD3D)* or *Vulkan (DXVK)* through MoltenVK to Metal.
-  Try the other one if the game stutters or draws incorrectly.
+- **Graphics** (HD Remaster) — *OpenGL (WineD3D)*, *Vulkan (DXVK)* through MoltenVK
+  to Metal, or *Metal (D9MT)* straight to Metal (ReRun 0.1.11+). Metal D9MT
+  downloads the same renderer and Wine engine as Aion on first Play, and Steam
+  restarts on it. Try another one if the game stutters or draws incorrectly.
 - **Full screen** (HD Remaster) — plays borderless at your display's resolution. The game
   always runs at 60 FPS.
 - **Settings → Data folder** — where Wine, Steam and the game live
