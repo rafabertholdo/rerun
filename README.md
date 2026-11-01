@@ -70,10 +70,13 @@ Pick **HD Remaster** at the top of the window. Illustrated steps:
    Resident Evil HD Remaster. ReRun notices when the download finishes.
 3. **Play** — Steam starts with the game.
 
-Turn on **Door skip** to cut the door animations between rooms. ReRun downloads
+Turn on **Door skip** to cut the door, stair and lift animations between rooms.
+ReRun installs its own port of
 [ThirteenAG's door skip plugin](https://github.com/ThirteenAG/RE0.RE1.DoorSkipPlugin)
-(pinned to its checksum) with the Ultimate ASI Loader as `dinput8.dll` into the
-game folder; turning it off removes the plugin again.
+as `scripts/rerun-doorskip.asi`, loaded by the Ultimate ASI Loader as
+`dinput8.dll` from ThirteenAG's release (pinned to its checksum). The 2016
+plugin no longer matches the game's June 2026 update, so ReRun 0.1.12+ replaces
+it. Turning door skip off removes the plugin again.
 
 Already have the game in **CrossOver, Whisky, Sikarugir, GameToMac or Pixel
 Port**? ReRun finds that Steam and offers to copy it, sign-in and downloaded
@@ -265,7 +268,7 @@ the renderer without Remix and lights dusk itself, with Direct3D's lights.
 - **Graphics** (HD Remaster) — *OpenGL (WineD3D)*, *Vulkan (DXVK)* through MoltenVK
   to Metal, or *Metal (D9MT)* straight to Metal (ReRun 0.1.11+). Metal D9MT
   downloads the same renderer and Wine engine as Aion on first Play, and Steam
-  restarts on it. Try another one if the game stutters or draws incorrectly.
+  restarts on it. ReRun 0.1.12 fixes a black screen on Metal in 0.1.11. Try another one if the game stutters or draws incorrectly.
 - **Full screen** (HD Remaster) — plays borderless at your display's resolution. The game
   always runs at 60 FPS.
 - **Settings → Data folder** — where Wine, Steam and the game live
@@ -370,7 +373,7 @@ Launch with ReRun's **Play** if authorization fails.
 | Go and Java 21 server images (Aion, optional local hosting) | [AionGo](https://github.com/rafabertholdo/AionGo) |
 | Steam client | Valve's `SteamSetup.exe` |
 | HD Loader (classic, HD textures) | [bio1hd-rework](https://github.com/Madxbio97/bio1hd-rework) |
-| Door skip plugin + Ultimate ASI Loader (HD Remaster) | [RE0.RE1.DoorSkipPlugin](https://github.com/ThirteenAG/RE0.RE1.DoorSkipPlugin) |
+| Ultimate ASI Loader (HD Remaster door skip; the plugin is ReRun's port of it) | [RE0.RE1.DoorSkipPlugin](https://github.com/ThirteenAG/RE0.RE1.DoorSkipPlugin) |
 | cnc-ddraw 7.1.0.0 (GTA) | [cnc-ddraw](https://github.com/FunkyFr3sh/cnc-ddraw) (MIT) |
 | gta2dx9 renderer (GTA2 widescreen): ReRun's build ships in the app, you add the rest | [gta2-rtx-remix](https://github.com/gebdag/gta2-rtx-remix) (MIT) |
 | Real-ESRGAN x4plus, ncnn/Vulkan (GTA2 HD textures, downloaded on first use) | [Real-ESRGAN v0.2.5.0](https://github.com/xinntao/Real-ESRGAN) (BSD-3-Clause) |
@@ -384,7 +387,7 @@ ReRun stands on [Wine](https://www.winehq.org), [Sikarugir](https://github.com/S
 and [GStreamer](https://gstreamer.freedesktop.org). The classic game runs on
 [Classic REbirth](https://classicrebirth.com) by Gemini, with HD textures from the
 Resident Evil HD mod and [HD Loader](https://github.com/Madxbio97/bio1hd-rework).
-Door skip is [ThirteenAG](https://github.com/ThirteenAG)'s plugin. GTA draws
+Door skip is ported from [ThirteenAG](https://github.com/ThirteenAG)'s plugin, with methods found by FluffyQuack. GTA draws
 through [FunkyFr3sh](https://github.com/FunkyFr3sh)'s cnc-ddraw. GTA2's
 widescreen renderer is [gebdag](https://github.com/gebdag)'s gta2dx9, and its HD
 textures are upscaled with [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)
