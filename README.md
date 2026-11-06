@@ -24,7 +24,7 @@ game with **Play**: no bottles, wrappers or terminal.
 |------|-------|--------|-------|
 | Resident Evil HD Remaster (`bhd.exe`) | [Steam 304240](https://store.steampowered.com/app/304240/) | ✅ Playable, including movies — Metal graphics option in ReRun 0.1.11+ | [Guide](https://studiocamera.app/guides/resident-evil-hd-remaster-on-mac/) |
 | Resident Evil (1996, `Biohazard.exe`) | Japanese PC release (MediaKite) + [Classic REbirth](https://classicrebirth.com/index.php/downloads/resident-evil-classic-rebirth/) | ✅ Playable, SD or HD textures — ReRun 0.1.1+ | [Guide](https://studiocamera.app/guides/resident-evil-1996-on-mac/) |
-| GTA (1997, `GTAWIN.EXE`) | The Windows version, with its `GTADATA` folder | ✅ Playable, full screen at 800×600 in 32-bit color — ReRun 0.1.5+ | [Guide](https://studiocamera.app/guides/gta-on-mac/) |
+| GTA (1997, `GTAWIN.EXE`) | The Windows version, with its `GTADATA` folder, or Rockstar Classics' free release (ReRun 0.1.14+) | ✅ Playable, full screen at 800×600 in 32-bit color — ReRun 0.1.5+ | [Guide](https://studiocamera.app/guides/gta-on-mac/) |
 | GTA2 (`gta2.exe`) | Version 9.6: Rockstar's 2004 freeware release or a patched retail copy | ✅ Playable — widescreen with the [gta2dx9](https://github.com/gebdag/gta2-rtx-remix) renderer (freeware release) or 4:3, dusk or noon, optional HD textures — ReRun 0.1.4+ | [Guide](https://studiocamera.app/guides/gta2-on-mac/) |
 | Aion 1.9 (`bin32/aion.bin`) | Your own 1.9 Windows client + private server | ✅ Playable with Metal graphics and AionGO by default — ReRun 0.1.8+ | [Guide](https://studiocamera.app/guides/aion-on-mac/) |
 
@@ -132,9 +132,14 @@ The 1997 original, its Windows version: `GTAWIN.EXE` in a `GTAWIN` folder
 beside the game's `GTADATA`, which it reads as `..\GTADATA`. Step by step:
 [the GTA setup guide](https://studiocamera.app/guides/gta-on-mac/).
 
-1. Put the game folder (the one with `GTAWIN` and `GTADATA`) anywhere on your Mac.
+Since 0.1.14 ReRun also plays Rockstar Classics' free release as it installs,
+with `WINO\Grand Theft Auto.exe` in place of `GTAWIN\GTAWIN.EXE`. Nothing needs
+renaming or patching. If you unpack its installer with `unshield` instead of
+running it, `Track8.wav` won't extract, so that radio track is missing.
+
+1. Put the game folder (the one with `GTAWIN` or `WINO`, and `GTADATA`) anywhere on your Mac.
 2. **In ReRun**, pick **GTA**. Press **Set Up** if you haven't (Wine only, no
-   Steam), then **Choose Game Folder** and pick the game's folder or its `GTAWIN`.
+   Steam), then **Choose Game Folder** and pick the game's folder or its `GTAWIN` or `WINO`.
    GTA and GTA2 have their own Wine (see [GTA2](#gta2)), so after updating from
    0.1.5 or earlier, press Set Up once more.
 3. **Play**. The first time, ReRun downloads cnc-ddraw (400 KB). The game fills
