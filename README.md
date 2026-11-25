@@ -33,7 +33,7 @@ and frame rate working out of the box.
 
 ## Requirements
 
-- A Mac with Apple silicon, running **macOS 26** or later
+- A Mac with Apple silicon, running **macOS 15** or later (ReRun 0.1.15+; earlier versions need macOS 26)
 - **Rosetta 2** (Wine runs as an x86_64 process)
 - Your own copy of the game: HD Remaster on Steam, the Japanese PC release
   of the 1996 game, GTA's Windows version, or GTA2 9.6 (the freeware release
@@ -237,7 +237,11 @@ Controls, sound and your name stay the game's own.
   renderer, copied beside the folder's `gta2dx9.dll` (which stays as it came).
   The original only lights the city through RTX Remix, so it was always
   daylight; ReRun's build lights dusk with Direct3D's own lights, up to eight
-  lamps and headlights at a time, and can draw the HD textures pack.
+  lamps and headlights at a time, and can draw the HD textures pack. Its
+  source is [rafabertholdo/gta2-rtx-remix](https://github.com/rafabertholdo/gta2-rtx-remix/tree/rerun),
+  branch `rerun`: gta2dx9 v0.8.5 plus ReRun's changes. Since 0.1.15 it ships
+  with its own `gta2dx9_vid-rerun.dll`, which finds the renderer under ReRun's
+  name, and the menus no longer draw over each other.
 - It also writes `gta2-rerun.exe`, a copy of `gta2.exe` with one check
   patched. Losing focus, GTA2 closes its screen and minimizes itself, and Wine
   never restores it, so switching apps froze the game; the copy keeps running
